@@ -1,37 +1,56 @@
 const axios = require('axios');
-// require dependencies
+// var PdfTable = require('voilab-pdf-table');
 const PDFDocument = require('pdfkit');
 const fs = require('fs');
-const { json } = require('express/lib/response');
+
 module.exports = {
+
     getAadhaarPDF: async (data) => {
         try {
             const doc = new PDFDocument();
 
-            // doc.addPage() // for adding new page in pdf
-            doc.pipe(fs.createWriteStream(`aadhaarPDF/${data.aadhaarNumber}.pdf`));
+            doc.pipe(fs.createWriteStream(`aadhaarPDF/${data.pdfFileName}.pdf`));
+
+            doc.moveDown(1.0);
+            doc.lineJoin('bevel')
+                .rect(50, 50, 510, 250)
+                .fillOpacity(0.8)
+                .fillAndStroke("#fff", "#0000FF")
+                .stroke()
 
             // Adding functionality
-            doc
-                .fontSize(15)
-                .fillColor('black')
-                .text("Aadhar details as per Digi-Locker XML File", 100, 100, { align: 'center' });
             doc.moveDown(1.5);
+            doc.image('uploads/' + data.aadhaarNumber + '.png', { width: 100, height: 130, align: 'left', valign: 'center' })
+                .fillColor('#444444')
+                .fontSize(15)
+                .text('Aaadhaar details as per Digi-Locker XML File', 160, 57, { align: 'left', underline: true })
+                .fontSize(10)
+                .text(' ', 200, 65, { align: 'right' })
+                .moveDown(1.0);
 
-            doc.image('uploads/' + data.aadhaarNumber, { width: 100, height: 100, align: 'left' });
+            doc.moveDown(0.3);
+            doc.text("Name : " + data.name, { align: 'left' })
+                .moveDown(0.5);
+            doc.text("DOB : " + data.dob, { align: 'left' })
+                .moveDown(0.5);
+            doc.text("Gender : " + data.gender, { align: 'left' })
+                .moveDown(0.5);
+            doc.text("Address : " + data.address, { align: 'left', lineBreak: true })
+                .moveDown(0.5);
+            doc.text("Village/ Town/ City : " + data.city, { align: 'left' })
+                .moveDown(0.5);
+            doc.text("Sub-district : " + data.subDistrict, { align: 'left' })
+                .moveDown(0.5);
+            doc.text("District : " + data.district, { align: 'left' })
+                .moveDown(0.5);
+            doc.text("State : " + data.state, { align: 'left' })
+                .moveDown(0.5);
+            doc.text("Pin Code : " + data.pincode, { align: 'left' })
+                .moveDown(0.5);
+            doc.text("Aadhaar Number : " + data.aadhaarNumber, { align: 'left' })
 
-            doc.text("Name : " + data.name, { align: 'center' })
-            doc.text("DOB : " + data.dob, { align: 'center' })
-            doc.text("Gender : " + data.gender, { align: 'center' })
-            doc.text("Address : " + data.address, { align: 'center' })
-            doc.text("Village/ Town/ City : " + data.city, { align: 'center' })
-            doc.text("Sub-district : " + data.subDistrict, { align: 'center' })
-            doc.text("District : " + data.district, { align: 'center' })
-            doc.text("State : " + data.state, { align: 'center' })
-            doc.text("Pin Code : " + data.pincode, { align: 'center' })
-            doc.text("Aadhar Number : " + data.aadhaarNumber, { align: 'center' })
             doc.end();
-            return `aadhaarPDF/${data.aadhaarNumber}.pdf`;
+            return "path to file - " + data.pdfFileName + ".pdf";
         }
         catch (error) {
             throw error;

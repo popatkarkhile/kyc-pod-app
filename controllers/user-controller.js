@@ -1,16 +1,14 @@
 var userService = require('../services/user-service');
 const logger = require('../helpers/logger-middleware');
 const uploadImg = require('../utility/fileUpload');
-
-// require dependencies
-const PDFDocument = require('pdfkit');
-const blobStream = require('blob-stream');
+const { v4: uuidv4 } = require('uuid');
 
 module.exports = {
     getAadhaarData: async (req, res, next) => {
         try {
             uploadImg(req, res, async function (error, data) {
-                console.log("Aadhaar Number >>>>", req.body.aadhaarNumber);
+                var pdfFileName = uuidv4();
+                req.body.pdfFileName = pdfFileName;
 
                 var pdfFilePath = await userService.getAadhaarPDF(req.body);
                 if (pdfFilePath) {
